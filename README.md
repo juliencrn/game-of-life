@@ -1,12 +1,12 @@
 <div align="center">
 
-  <h1><code>wasm-pack-template</code></h1>
+  <h1><code>Game of life</code></h1>
 
-  <strong>A template for kick starting a Rust and WebAssembly project using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+  <strong>A game-of-life implementation with Rust and WebAssembly.
 
-  <p>
+  <!-- <p>
     <a href="https://travis-ci.org/rustwasm/wasm-pack-template"><img src="https://img.shields.io/travis/rustwasm/wasm-pack-template.svg?style=flat-square" alt="Build Status" /></a>
-  </p>
+  </p> -->
 
   <h3>
     <a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html">Tutorial</a>
@@ -19,16 +19,16 @@
 
 ## About
 
-[**📚 Read this template tutorial! 📚**][template-docs]
+The [Wikipedia definition](https://www.wikiwand.com/en/Conway%27s_Game_of_Life): 
 
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting package to NPM.
+"The universe of the Game of Life is an infinite two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, alive or dead, or "populated" or "unpopulated". Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each step in time, the following transitions occur:
 
-Be sure to check out [other `wasm-pack` tutorials online][tutorials] for other
-templates and usages of `wasm-pack`.
+- Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+- Any live cell with two or three live neighbours lives on to the next generation.
+- Any live cell with more than three live neighbours dies, as if by overpopulation.
+- Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
-[tutorials]: https://rustwasm.github.io/docs/wasm-pack/tutorials/index.html
-[template-docs]: https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html
+The initial pattern constitutes the seed of the system. The first generation is created by applying the above rules simultaneously to every cell in the seed—births and deaths occur simultaneously, and the discrete moment at which this happens is sometimes called a tick (in other words, each generation is a pure function of the preceding one). The rules continue to be applied repeatedly to create further generations."
 
 ## 🚴 Usage
 
