@@ -1,49 +1,30 @@
 import { memory } from "game-of-life/game_of_life_bg";
-import { Universe, Cell } from "game-of-life";
+import { Universe } from "game-of-life";
 
-const CELL_SIZE = 10; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
+const CELL_SIZE = 10; // px
 
-// Construct the universe, and get its width and height.
+// Create Universe and Canvas
 const universe = Universe.new();
+const canvas = document.getElementById("game-of-life-canvas");
+const ctx = canvas.getContext('2d');
+
+// Initial settings
+let isPlaying = true
+// universe.set_width(100)
+// universe.set_height(100)
+
+universe.randomify()
+
+// Get useful variables
 const width = universe.width();
 const height = universe.height();
 
-// Create the canvas
-const canvas = document.getElementById("game-of-life-canvas");
+// Set the canvas size
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
-
-const ctx = canvas.getContext('2d');
-
-let isPlaying = true
-
-const renderLoop = () => {
-    if (!isPlaying) {
-        return
-    }
-    universe.tick();
-
-    drawGrid();
-    drawCells();
-
-    requestAnimationFrame(renderLoop);
-}
-
-window.addEventListener("keypress", event => {
-    if (event.code === "Space") {
-        isPlaying = !isPlaying
-    }
-
-    if (isPlaying) {
-        requestAnimationFrame(renderLoop);
-    }
-})
-
-requestAnimationFrame(renderLoop);
-
 
 const drawGrid = () => {
     ctx.beginPath();
@@ -90,10 +71,6 @@ const drawCells = () => {
                 ? ALIVE_COLOR
                 : DEAD_COLOR;
 
-            // ctx.fillStyle = cells[idx] === Cell.Dead
-            //     ? DEAD_COLOR
-            //     : ALIVE_COLOR;
-
             ctx.fillRect(
                 col * (CELL_SIZE + 1) + 1,
                 row * (CELL_SIZE + 1) + 1,
@@ -105,3 +82,27 @@ const drawCells = () => {
 
     ctx.stroke();
 };
+
+const renderLoop = () => {
+    if (!isPlaying) {
+        return
+    }
+    universe.tick();
+
+    drawGrid();
+    drawCells();
+
+    requestAnimationFrame(renderLoop);
+}
+
+window.addEventListener("keypress", event => {
+    if (event.code === "Space") {
+        isPlaying = !isPlaying
+    }
+
+    if (isPlaying) {
+        requestAnimationFrame(renderLoop);
+    }
+})
+
+requestAnimationFrame(renderLoop);

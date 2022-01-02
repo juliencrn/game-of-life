@@ -22,6 +22,7 @@ pub struct Universe {
     cells: FixedBitSet,
 }
 
+/// Methods not exposed to JavaScript.
 impl Universe {
     fn get_index(&self, row: u32, column: u32) -> usize {
         (row * self.width + column) as usize
@@ -42,6 +43,24 @@ impl Universe {
         }
         count
     }
+
+    pub fn create_cells(size: usize) -> FixedBitSet {
+        FixedBitSet::with_capacity(size)
+    }
+
+    /// Get the dead and alive values of the entire universe.
+    pub fn get_cells(&self) -> &FixedBitSet {
+        &self.cells
+    }
+
+    /// Set cells to be alive in a universe by passing the row and column
+    /// of each cell as an array.
+    pub fn set_cells(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter().cloned() {
+            let idx = self.get_index(row, col);
+            self.cells.set(idx, true);
+        }
+    }
 }
 
 /// Public methods, exported to JavaScript.
@@ -51,17 +70,30 @@ impl Universe {
         let width = 64;
         let height = 64;
         let size = (width * height) as usize;
-        let mut cells = FixedBitSet::with_capacity(size);
-
-        for i in 0..size {
-            cells.set(i, js_sys::Math::random() < 0.5);
-        }
+        let cells = Universe::create_cells(size);
 
         Universe {
             width,
             height,
             cells,
         }
+    }
+
+    pub fn randomify(&mut self) {
+        let size = (self.width * self.height) as usize;
+        for i in 0..size {
+            self.cells.set(i, js_sys::Math::random() < 0.5);
+        }
+    }
+
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = Universe::create_cells((width * self.height) as usize);
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = Universe::create_cells((self.width * height) as usize);
     }
 
     pub fn width(&self) -> u32 {
