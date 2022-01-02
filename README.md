@@ -32,30 +32,19 @@ The initial pattern constitutes the seed of the system. The first generation is 
 
 ## 🚴 Usage
 
-### 🐑 Use `cargo generate` to Clone this Template
-
-[Learn more about `cargo generate` here.](https://github.com/ashleygwilliams/cargo-generate)
-
-```
-cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
-cd my-project
-```
-
-### 🛠️ Build with `wasm-pack build`
-
-```
+```sh
+# Build wasm 
 wasm-pack build
-```
 
-### 🔬 Test in Headless Browsers with `wasm-pack test`
+# Test wasm
+wasm-pack test --firefox --headless 
 
-```
-wasm-pack test --headless --firefox
-```
+# Start the website
+cd www
+npm install
+npm run start
 
-### 🎁 Publish to NPM with `wasm-pack publish`
-
-```
+# Publish on NPM
 wasm-pack publish
 ```
 
