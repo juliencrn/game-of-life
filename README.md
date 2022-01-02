@@ -30,13 +30,15 @@ The [Wikipedia definition](https://www.wikiwand.com/en/Conway%27s_Game_of_Life):
 
 The initial pattern constitutes the seed of the system. The first generation is created by applying the above rules simultaneously to every cell in the seed—births and deaths occur simultaneously, and the discrete moment at which this happens is sometimes called a tick (in other words, each generation is a pure function of the preceding one). The rules continue to be applied repeatedly to create further generations."
 
+![demo](./demo.gif)
+
 ## 🚴 Usage
 
 ```sh
-# Build wasm 
+# Build 
 wasm-pack build
 
-# Test wasm
+# Test
 wasm-pack test --firefox --headless 
 
 # Start the website
