@@ -1,7 +1,7 @@
 import { memory } from "game-of-life/game_of_life_bg";
 import { Universe, Cell } from "game-of-life";
 
-const CELL_SIZE = 5; // px
+const CELL_SIZE = 10; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
@@ -18,7 +18,12 @@ canvas.width = (CELL_SIZE + 1) * width + 1;
 
 const ctx = canvas.getContext('2d');
 
+let isPlaying = true
+
 const renderLoop = () => {
+    if (!isPlaying) {
+        return
+    }
     universe.tick();
 
     drawGrid();
@@ -27,7 +32,18 @@ const renderLoop = () => {
     requestAnimationFrame(renderLoop);
 }
 
+window.addEventListener("keypress", event => {
+    if (event.code === "Space") {
+        isPlaying = !isPlaying
+    }
+
+    if (isPlaying) {
+        requestAnimationFrame(renderLoop);
+    }
+})
+
 requestAnimationFrame(renderLoop);
+
 
 const drawGrid = () => {
     ctx.beginPath();
