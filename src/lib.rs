@@ -85,7 +85,6 @@ impl Universe {
         let size = (width * height) as usize;
         let cells = Universe::create_cells(size);
 
-        panic!("Caca");
         Universe {
             width,
             height,

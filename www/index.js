@@ -9,20 +9,19 @@ const CELL_SIZE = 10; // px
 // Create Universe and Canvas
 const universe = Universe.new();
 const canvas = document.getElementById("game-of-life-canvas");
+const playPauseButton = document.getElementById("play-pause");
 const ctx = canvas.getContext('2d');
 
-// Initial settings
-let isPlaying = true
+let animationId = null;
+
 // universe.set_width(100)
 // universe.set_height(100)
 
 universe.randomify()
 
-// Get useful variables
 const width = universe.width();
 const height = universe.height();
 
-// Set the canvas size
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
 
@@ -47,6 +46,21 @@ const drawGrid = () => {
 
 const getIndex = (row, column) => {
     return row * width + column;
+};
+
+const play = () => {
+    playPauseButton.textContent = "Pause";
+    renderLoop();
+};
+
+const pause = () => {
+    playPauseButton.textContent = "Play";
+    cancelAnimationFrame(animationId);
+    animationId = null;
+};
+
+const isPaused = () => {
+    return animationId === null;
 };
 
 const bitIsSet = (n, arr) => {
@@ -84,25 +98,30 @@ const drawCells = () => {
 };
 
 const renderLoop = () => {
-    if (!isPlaying) {
-        return
-    }
     universe.tick();
 
     drawGrid();
     drawCells();
 
-    requestAnimationFrame(renderLoop);
+    animationId = requestAnimationFrame(renderLoop);
+}
+
+const togglePlay = () => {
+    if (isPaused()) {
+        play()
+    } else {
+        pause()
+    }
 }
 
 window.addEventListener("keypress", event => {
     if (event.code === "Space") {
-        isPlaying = !isPlaying
-    }
-
-    if (isPlaying) {
-        requestAnimationFrame(renderLoop);
+        togglePlay()
     }
 })
 
-requestAnimationFrame(renderLoop);
+playPauseButton.addEventListener('click', () => {
+    togglePlay()
+})
+
+play()
