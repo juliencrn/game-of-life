@@ -1,8 +1,12 @@
 // mod utils;
 
 extern crate js_sys;
+extern crate web_sys;
+
 use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
+
+mod utils;
 
 // // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // // allocator.
@@ -14,6 +18,13 @@ use wasm_bindgen::prelude::*;
 // extern "C" {
 //     fn alert(s: &str);
 // }
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 #[wasm_bindgen]
 pub struct Universe {
@@ -67,11 +78,14 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
         let size = (width * height) as usize;
         let cells = Universe::create_cells(size);
 
+        panic!("Caca");
         Universe {
             width,
             height,
@@ -122,16 +136,25 @@ impl Universe {
                     match (cell, live_neighbors) {
                         // Rule 1: Any live cell with fewer than two live neighbors
                         // dies, as if caused by under-population.
-                        (true, x) if x < 2 => false,
+                        (true, x) if x < 2 => {
+                            log!("cell[{}, {}] now dies", row, col);
+                            false
+                        }
                         // Rule 2: Any live cell with two or three live neighbors
                         // lives on to the next generation.
                         (true, 2) | (true, 3) => true,
                         // Rule 3: Any live cell with more than three live
                         // neighbors dies, as if by overpopulation.
-                        (true, x) if x > 3 => false,
+                        (true, x) if x > 3 => {
+                            log!("cell[{}, {}] now dies", row, col);
+                            false
+                        }
                         // Rule 4: Any dead cell with exactly three live neighbors
                         // becomes a live cell, as if by reproduction.
-                        (false, 3) => true,
+                        (false, 3) => {
+                            log!("cell[{}, {}] now lives", row, col);
+                            true
+                        }
                         // All other cells remain in the same state.
                         (otherwise, _) => otherwise,
                     },
