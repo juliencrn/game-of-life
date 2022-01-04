@@ -141,7 +141,7 @@ impl Universe {
                         // Rule 1: Any live cell with fewer than two live neighbors
                         // dies, as if caused by under-population.
                         (true, x) if x < 2 => {
-                            log!("cell[{}, {}] now dies", row, col);
+                            // log!("cell[{}, {}] now dies", row, col);
                             false
                         }
                         // Rule 2: Any live cell with two or three live neighbors
@@ -150,13 +150,13 @@ impl Universe {
                         // Rule 3: Any live cell with more than three live
                         // neighbors dies, as if by overpopulation.
                         (true, x) if x > 3 => {
-                            log!("cell[{}, {}] now dies", row, col);
+                            // log!("cell[{}, {}] now dies", row, col);
                             false
                         }
                         // Rule 4: Any dead cell with exactly three live neighbors
                         // becomes a live cell, as if by reproduction.
                         (false, 3) => {
-                            log!("cell[{}, {}] now lives", row, col);
+                            // log!("cell[{}, {}] now lives", row, col);
                             true
                         }
                         // All other cells remain in the same state.

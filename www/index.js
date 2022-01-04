@@ -11,10 +11,16 @@ const universe = Universe.new();
 const canvas = document.getElementById("game-of-life-canvas");
 const playPauseButton = document.getElementById("play-pause");
 const resetButton = document.getElementById("reset");
+const fpsInput = document.getElementById("fps");
 const ctx = canvas.getContext('2d');
+
+let fps = Number(fpsInput.value || 50)
 
 let animationId = null;
 let reseated = true;
+
+let then = 0
+let fpsInterval = 1000 / fps
 
 universe.set_width(48)
 universe.set_height(48)
@@ -54,6 +60,9 @@ const play = () => {
         universe.randomify()
     }
     playPauseButton.textContent = "Pause";
+    fps = Number(fpsInput.value || 50)
+    fpsInterval = 1000 / fps;
+    then = Date.now();
     renderLoop();
 };
 
@@ -102,10 +111,22 @@ const drawCells = () => {
 };
 
 const renderLoop = () => {
-    universe.tick();
+    // calc elapsed time since last loop
+    const now = Date.now();
+    const elapsed = now - then;
 
-    drawGrid();
-    drawCells();
+    // if enough time has elapsed, draw the next frame
+    if (elapsed > fpsInterval) {
+        // Get ready for next frame by setting then=now, but also adjust for your
+        // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+        then = now - (elapsed % fpsInterval);
+
+        // Own proper logic
+        universe.tick();
+
+        drawGrid();
+        drawCells();
+    }
 
     animationId = requestAnimationFrame(renderLoop);
 }
@@ -159,6 +180,14 @@ resetButton.addEventListener("click", event => {
 
     drawGrid();
     drawCells();
+})
+
+fpsInput.addEventListener("change", event => {
+    fps = Number(event.target.value || 50)
+
+    // Refresh
+    pause()
+    play()
 })
 
 play()
