@@ -11,6 +11,7 @@ const universe = Universe.new();
 const canvas = document.getElementById("game-of-life-canvas");
 const playPauseButton = document.getElementById("play-pause");
 const resetButton = document.getElementById("reset");
+const randomButton = document.getElementById("random");
 const fpsInput = document.getElementById("fps");
 const ctx = canvas.getContext('2d');
 
@@ -182,12 +183,27 @@ resetButton.addEventListener("click", event => {
     drawCells();
 })
 
+randomButton.addEventListener("click", event => {
+    if (!isPaused()) {
+        pause()
+    }
+
+    universe.reset_cells();
+    universe.randomify()
+    reseated = true;
+
+    drawGrid();
+    drawCells();
+})
+
 fpsInput.addEventListener("change", event => {
     fps = Number(event.target.value || 50)
 
-    // Refresh
-    pause()
-    play()
+    // Refresh if it was playing
+    if (!isPaused()) {
+        pause()
+        play()
+    }
 })
 
 play()
