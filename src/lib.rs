@@ -163,4 +163,18 @@ impl Universe {
 
         self.cells = next;
     }
+
+    pub fn toggle_cell(&mut self, row: u32, col: u32) {
+        let idx = self.get_index(row, col);
+        let cell = self.cells[idx];
+        let mut next = self.cells.clone();
+        next.set(
+            idx,
+            match cell {
+                true => false,
+                false => true,
+            },
+        );
+        self.cells = next;
+    }
 }
