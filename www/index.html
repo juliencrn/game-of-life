@@ -4,13 +4,44 @@
 <head>
   <meta charset="utf-8">
   <title>Game of life</title>
-  <link rel="stylesheet" href="./style.css">
+
+  <link rel="icon" type="image/png" href="/favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body class="max-w-xl mx-auto relative text-center flex flex-col items-center justify-center min-h-screen p-4">
   <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
-  <button id="play-pause"></button>
-  <canvas id="game-of-life-canvas"></canvas>
+
+  <header class="my-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+      <a class="underline" href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">
+        Conway's game of life
+      </a>
+    </h1>
+
+    <p class="mt-4 text-lg text-gray-700">
+      To draw your own patterns, pause the game and click on the wanted cells, then play and see what's going on.
+    </p>
+
+    <div>
+      <button id="play-pause"
+        class="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded"></button>
+      <button id="reset"
+        class="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded">Reset</button>
+    </div>
+  </header>
+
+  <div class="square flex">
+    <canvas id="game-of-life-canvas" class="flex-1 w-full"></canvas>
+  </div>
+
+  <footer class="my-8">
+    <p class="text-gray-700">
+      Built with Rust and WebAssembly, see more on <a class="underline"
+        href="https://github.com/juliencrn/game-of-life">gihtub</a>
+    </p>
+  </footer>
+
   <script src="./bootstrap.js"></script>
 </body>
 
