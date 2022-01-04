@@ -104,6 +104,11 @@ impl Universe {
         self.cells = Universe::create_cells((width * self.height) as usize);
     }
 
+    pub fn reset_cells(&mut self) {
+        let size = (self.width * self.height) as usize;
+        self.cells = Universe::create_cells(size);
+    }
+
     pub fn set_height(&mut self, height: u32) {
         self.height = height;
         self.cells = Universe::create_cells((self.width * height) as usize);

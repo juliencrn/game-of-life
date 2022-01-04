@@ -83,3 +83,27 @@ pub fn test_toggle_cell() {
     // then see if the cells in the `Universe`s are the same.
     assert_eq!(&input_universe.get_cells(), &expected_universe.get_cells());
 }
+
+#[cfg(test)]
+pub fn expected_empty() -> Universe {
+    let mut universe = Universe::new();
+    universe.set_width(6);
+    universe.set_height(6);
+    universe
+}
+
+#[wasm_bindgen_test]
+pub fn test_reset_cells() {
+    // Let's create a smaller Universe with a small spaceship to test!
+    let mut input_universe = input_toggle();
+
+    // This is what our spaceship should look like
+    // after one tick in our universe.
+    let expected_universe = expected_empty();
+
+    // Reset the universe
+    input_universe.reset_cells();
+
+    // then see if the cells in the `Universe`s are the same.
+    assert_eq!(&input_universe.get_cells(), &expected_universe.get_cells());
+}
