@@ -15,6 +15,9 @@ const randomButton = document.getElementById("random");
 const fpsInput = document.getElementById("fps");
 const ctx = canvas.getContext('2d');
 
+let ctrlPressed = false
+let shiftPressed = false
+
 let fps = Number(fpsInput.value || 50)
 
 let animationId = null;
@@ -140,10 +143,26 @@ const togglePlay = () => {
     }
 }
 
-window.addEventListener("keypress", event => {
-    if (event.code === "Space") {
-        togglePlay()
+window.addEventListener("keydown", event => {
+    switch (event.key) {
+        case " ":
+            togglePlay()
+            break;
+        // Control key
+        case "Meta":
+            ctrlPressed = true
+            break;
+        case "Shift":
+            shiftPressed = true
+            break;
+        default:
+            break;
     }
+})
+
+window.addEventListener("keyup", event => {
+    ctrlPressed = false
+    shiftPressed = false
 })
 
 playPauseButton.addEventListener('click', () => {
@@ -154,18 +173,27 @@ canvas.addEventListener("click", event => {
     if (reseated) {
         reseated = false
     }
-    const boundingRect = canvas.getBoundingClientRect();
 
+    // Get the clicked cell position
+    const boundingRect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / boundingRect.width;
     const scaleY = canvas.height / boundingRect.height;
-
     const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
     const canvasTop = (event.clientY - boundingRect.top) * scaleY;
-
     const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-    universe.toggle_cell(row, col);
+    // Catch Ctrl+click, Ctrl+Shift+click
+    if (ctrlPressed) {
+        if (shiftPressed) {
+            universe.draw_pulsar(row, col);
+        } else {
+            universe.draw_glider(row, col);
+        }
+    } else {
+        universe.toggle_cell(row, col);
+    }
+
 
     drawGrid();
     drawCells();

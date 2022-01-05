@@ -20,11 +20,11 @@ mod utils;
 // }
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
+// macro_rules! log {
+//     ( $( $t:tt )* ) => {
+//         web_sys::console::log_1(&format!( $( $t )* ).into());
+//     }
+// }
 
 #[wasm_bindgen]
 pub struct Universe {
@@ -71,6 +71,77 @@ impl Universe {
             let idx = self.get_index(row, col);
             self.cells.set(idx, true);
         }
+    }
+
+    pub fn get_glider_pattern() -> Vec<(i32, i32)> {
+        vec![(-1, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
+    }
+
+    pub fn get_pulsar_pattern() -> Vec<(i32, i32)> {
+        let shape_1 = vec![
+            (-6, -4),
+            (-6, -3),
+            (-6, -2),
+            (-4, -6),
+            (-3, -6),
+            (-2, -6),
+            (-4, -1),
+            (-3, -1),
+            (-2, -1),
+            (-1, -4),
+            (-1, -3),
+            (-1, -2),
+        ];
+        let shape_2 = vec![
+            (-6, 2),
+            (-6, 3),
+            (-6, 4),
+            (-4, 1),
+            (-3, 1),
+            (-2, 1),
+            (-4, 6),
+            (-3, 6),
+            (-2, 6),
+            (-1, 2),
+            (-1, 3),
+            (-1, 4),
+        ];
+        let shape_3 = vec![
+            (1, -4),
+            (1, -3),
+            (1, -2),
+            (2, -6),
+            (3, -6),
+            (4, -6),
+            (2, -1),
+            (3, -1),
+            (4, -1),
+            (6, -4),
+            (6, -3),
+            (6, -2),
+        ];
+        let shape_4 = vec![
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (2, 1),
+            (3, 1),
+            (4, 1),
+            (2, 6),
+            (3, 6),
+            (4, 6),
+            (6, 2),
+            (6, 3),
+            (6, 4),
+        ];
+        let mut cells_to_draw: Vec<(i32, i32)> = vec![];
+
+        cells_to_draw.extend(shape_1);
+        cells_to_draw.extend(shape_2);
+        cells_to_draw.extend(shape_3);
+        cells_to_draw.extend(shape_4);
+
+        cells_to_draw
     }
 }
 
@@ -181,5 +252,45 @@ impl Universe {
             },
         );
         self.cells = next;
+    }
+
+    fn draw_pattern(&mut self, row: u32, col: u32, pattern: Vec<(i32, i32)>) {
+        let mut next = self.cells.clone();
+
+        for (r_row, r_col) in pattern {
+            // Calc the real position from relative position + clicked cell
+            let mut r: i32 = row as i32 + r_row;
+            let mut c: i32 = col as i32 + r_col;
+
+            // Out of window case
+            if r < 0 {
+                r = self.height() as i32 + r;
+            }
+            if c < 0 {
+                c = self.width() as i32 + c;
+            }
+
+            let idx = self.get_index(r as u32, c as u32);
+            let cell = self.cells[idx];
+            next.set(
+                idx,
+                match cell {
+                    true => false,
+                    false => true,
+                },
+            );
+        }
+
+        self.cells = next;
+    }
+
+    pub fn draw_glider(&mut self, row: u32, col: u32) {
+        let cells_to_draw = Universe::get_glider_pattern();
+        self.draw_pattern(row, col, cells_to_draw);
+    }
+
+    pub fn draw_pulsar(&mut self, row: u32, col: u32) {
+        let cells_to_draw = Universe::get_pulsar_pattern();
+        self.draw_pattern(row, col, cells_to_draw);
     }
 }
