@@ -6,57 +6,88 @@
   <title>Game of life</title>
 
   <link rel="icon" type="image/png" href="/favicon.ico">
+  <style>
+    canvas {
+      border: 1px solid green;
+    }
+  </style>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="max-w-xl mx-auto relative text-center flex flex-col items-center justify-center min-h-screen p-4">
+<body class="relative min-h-screen p-4 flex flex-col bg-black text-gray-400 font-mono tracking-tighter">
   <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
 
-  <header class="my-8">
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-      <a class="underline" href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">
+  <header class="max-w-xl mx-auto mt-10 text-center">
+    <h1 class="text-3xl sm:text-4xl text-gray-50 font-extrabold">
+      <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">
         Conway's game of life
       </a>
     </h1>
-
-    <p class="mt-4 text-lg text-gray-700">
+    <p class="mt-4 text-lg text-gray-400">
       To draw your own patterns, pause the game and click on the wanted cells, then play and see what's going on.
-      <br>
-      Have fun ✌
-    </p>
-
-    <div>
-      <button id="play-pause"
-        class="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded"></button>
-      <button id="random"
-        class="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded">Random</button>
-      <button id="reset"
-        class="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded">Reset</button>
-    </div>
-
-    <div class="mt-4 flex justify-center">
-      <input id="fps" name="fps" type="range" min="1" max="60" value="50">
-      <label for="fps" class="text-lg text-gray-700 pl-2">
-        Speed (1-60 fps)
-      </label>
-    </div>
-
-    <p class="mt-4 text-gray-700">
-      Special: Draw some infinite patterns like a "glider" (<code class="text-sm text-mono">Ctrl + Click</code>) or a
-      "pulsar"
-      (<code class="text-sm text-mono">Ctrl + Shift +
-      Click</code>).
+      <br />
+      Have fun <span class="font-sans">✌</span>
     </p>
   </header>
 
-  <div class="square flex">
-    <canvas id="game-of-life-canvas" class="flex-1 w-full"></canvas>
-  </div>
+  <main class="flex-1 my-10">
+    <div class="flex flex-col md:flex-row max-w-4xl mx-auto">
+      <aside class="w-full md:w-1/3 pb-2 md:pb-0 md:pr-10">
+        <div>
+          <h3 class="text-2xl text-gray-50 font-extrabold mb-1">
+            Settings
+          </h3>
 
-  <footer class="my-8">
-    <p class="text-gray-700">
-      Built with Rust and WebAssembly, see more on <a class="underline"
-        href="https://github.com/juliencrn/game-of-life">gihtub</a>
+          <ul>
+            <li>
+              <button id="play-pause" class="cursor-pointer border-b border-dashed hover:text-gray-300"></button>
+            </li>
+            <li>
+              <button id="random" class="cursor-pointer border-b border-dashed hover:text-gray-300">Random</button>
+            </li>
+            <li>
+              <button id="reset" class="cursor-pointer border-b border-dashed hover:text-gray-300">Reset</button>
+            </li>
+            <li>
+              <div class="flex justify-start">
+                <label for="fps" class="pr-2">
+                  Speed (fps)
+                </label>
+                <input id="fps" name="fps" type="range" min="1" max="60" value="60">
+              </div>
+            </li>
+          </ul>
+
+          <div class="mt-4">
+            <h4 class="text-xl text-gray-50 font-extrabold mb-1">Special patterns</h4>
+
+            <p>
+              To draw a special pattern, press some shortcuts and click on a cell.
+            </p>
+            <ul class="pl-5 list-disc">
+              <li>
+                Glider: <code>Ctrl + Click</code>
+              </li>
+              <li>
+                Pulsar: <code>Ctrl + Shift + Click</code>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <section class="flex-1">
+        <div class="aspect-square flex">
+          <canvas id="game-of-life-canvas" class="flex-1 w-full"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="max-w-xl mx-auto text-center my-10">
+    <p>
+      Built with Rust and WebAssembly, see more on <a class="cursor-pointer border-b border-dashed hover:text-gray-300"
+        href="https://github.com/juliencrn/game-of-life">gihtub</a>.
     </p>
   </footer>
 

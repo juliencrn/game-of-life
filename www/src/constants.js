@@ -1,6 +1,6 @@
-export const GRID_COLOR = "#CCCCCC";
-export const DEAD_COLOR = "#FFFFFF";
-export const ALIVE_COLOR = "#000000";
+export const GRID_COLOR = "#000";
+export const DEAD_COLOR = "#000";
+export const ALIVE_COLOR = "green";
 export const CELL_SIZE = 10; // px
 
 export const elements = {
