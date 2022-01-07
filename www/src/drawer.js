@@ -39,6 +39,8 @@ export default class Drawer {
     drawCells(cellsAsUint8Array) {
         this.ctx.beginPath();
 
+        let count = 0;
+
         for (let row = 0; row < this.height; row++) {
             for (let col = 0; col < this.width; col++) {
                 const idx = this.getIndex(row, col);
@@ -46,6 +48,8 @@ export default class Drawer {
                 this.ctx.fillStyle = this.bitIsSet(idx, cellsAsUint8Array)
                     ? ALIVE_COLOR
                     : DEAD_COLOR;
+
+                count++;
 
                 this.ctx.fillRect(
                     col * (CELL_SIZE + 1) + 1,
@@ -55,6 +59,8 @@ export default class Drawer {
                 );
             }
         }
+
+        console.log(`draw ${count} cells / ${this.height * this.width}`);
 
         this.ctx.stroke();
     }

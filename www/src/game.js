@@ -6,7 +6,7 @@ class GameOfLife {
         const universe = Universe.new();
         universe.set_width(width)
         universe.set_height(height)
-        universe.randomify();
+        universe.randomize();
 
         this.universe = universe;
         this.reseated = false
@@ -22,7 +22,7 @@ class GameOfLife {
     }
 
     randomize() {
-        this.universe.randomify()
+        this.universe.randomize()
         if (this.reseated) {
             this.reseated = false
         }
