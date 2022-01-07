@@ -2,6 +2,7 @@ import GameOfLife from "./game";
 import Drawer from "./drawer";
 import { CELL_SIZE, elements } from "./constants";
 import { Ticker } from "./ticker";
+import Fps from "./fps";
 
 // TODO: remove global vars
 let ctrlPressed = false
@@ -24,7 +25,10 @@ function redraw() {
     drawer.drawCells(gameOfLife.getCells());
 }
 
+const timer = new Fps()
+
 const ticker = new Ticker(() => {
+    timer.render();
     gameOfLife.tick();
     redraw()
 })
