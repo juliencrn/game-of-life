@@ -21,6 +21,32 @@ class GameOfLife {
         this.universe.tick()
     }
 
+    getUpdatedLive() {
+        const byteOffset = this.universe.lives_ptr();
+        const size = this.universe.lives_count();
+        return new Uint32Array(memory.buffer, byteOffset, size);
+    }
+
+    getUpdatedDead() {
+        const byteOffset = this.universe.deads_ptr();
+        const size = this.universe.deads_count();
+        return new Uint32Array(memory.buffer, byteOffset, size);
+    }
+
+    getUpdatedCells() {
+        return {
+            lives: this.getUpdatedLive(),
+            deads: this.getUpdatedDead(),
+        }
+    }
+
+    // getUpdatedCells() {
+    //     return {
+    //         lives: this.universe.lives(),
+    //         deads: this.universe.deads(),
+    //     }
+    // }
+
     randomize() {
         this.universe.randomize()
         if (this.reseated) {

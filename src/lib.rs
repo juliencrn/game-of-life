@@ -50,6 +50,8 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: FixedBitSet,
+    new_lives: Vec<u32>,
+    new_deads: Vec<u32>,
 }
 
 /// Methods not exposed to JavaScript.
@@ -60,32 +62,6 @@ impl Universe {
 
     fn live_neighbor_count(&self, row: u32, col: u32) -> u8 {
         let mut count = 0;
-
-        // for delta_row in [self.height - 1, 0, 1].iter().cloned() {
-        //     for delta_col in [self.height - 1, 0, 1].iter().cloned() {
-        //         if delta_row == 0 && delta_col == 0 {
-        //             continue;
-        //         }
-
-        //         let nr = if (row + delta_row) == 0 { self.height - 1 } else { row - 1 };
-
-        //         // let neighbor_row = if (row + delta_row) > height
-        //         let neighbor_row = (row + delta_row) % self.height;
-        //         let neighbor_col = (col + delta_col) % self.width;
-        //         let idx = self.get_index(neighbor_row, neighbor_col);
-
-        //         log!(
-        //             "idx {}, row {}, col {}, n_row {}, n_col {}",
-        //             idx,
-        //             row,
-        //             col,
-        //             neighbor_row,
-        //             neighbor_col
-        //         );
-
-        //         count += self.cells[idx] as u8;
-        //     }
-        // }
 
         // Getting row, col using a modulo in a loop is costly
         // Instead we'll read the value in a if and lazy calc if is needed
@@ -226,6 +202,8 @@ impl Universe {
             width,
             height,
             cells,
+            new_lives: vec![],
+            new_deads: vec![],
         }
     }
 
@@ -263,12 +241,39 @@ impl Universe {
         self.cells.as_slice().as_ptr()
     }
 
+    // pub fn deads(&self) -> Box<[u32]> {
+    //     self.new_deads.clone().into_boxed_slice()
+    // }
+
+    // pub fn lives(&self) -> Box<[u32]> {
+    //     self.new_lives.clone().into_boxed_slice()
+    // }
+
+    pub fn lives_ptr(&self) -> *const u32 {
+        self.new_lives.as_ptr()
+    }
+
+    pub fn lives_count(&self) -> usize {
+        self.new_lives.len()
+    }
+
+    pub fn deads_ptr(&self) -> *const u32 {
+        self.new_deads.as_ptr()
+    }
+
+    pub fn deads_count(&self) -> usize {
+        self.new_deads.len()
+    }
+
     pub fn tick(&mut self) {
         // let _timer = Timer::new("Universe::tick");
         let mut next = {
             // let _timer = Timer::new("Alloc next cells");
             self.cells.clone()
         };
+
+        let mut new_lives = vec![];
+        let mut new_deads = vec![];
 
         {
             // let _timer = Timer::new("new generation");
@@ -278,40 +283,40 @@ impl Universe {
                     let cell = self.cells[idx];
                     let live_neighbors = self.live_neighbor_count(row, col);
 
-                    next.set(
-                        idx,
-                        match (cell, live_neighbors) {
-                            // Rule 1: Any live cell with fewer than two live neighbors
-                            // dies, as if caused by under-population.
-                            (true, x) if x < 2 => {
-                                // log!("cell[{}, {}] now dies", row, col);
-                                false
-                            }
-                            // Rule 2: Any live cell with two or three live neighbors
-                            // lives on to the next generation.
-                            (true, 2) | (true, 3) => true,
-                            // Rule 3: Any live cell with more than three live
-                            // neighbors dies, as if by overpopulation.
-                            (true, x) if x > 3 => {
-                                // log!("cell[{}, {}] now dies", row, col);
-                                false
-                            }
-                            // Rule 4: Any dead cell with exactly three live neighbors
-                            // becomes a live cell, as if by reproduction.
-                            (false, 3) => {
-                                // log!("cell[{}, {}] now lives", row, col);
-                                true
-                            }
-                            // All other cells remain in the same state.
-                            (otherwise, _) => otherwise,
-                        },
-                    );
+                    let new_value = match (cell, live_neighbors) {
+                        // Rule 1: Any live cell with fewer than two live neighbors
+                        // dies, as if caused by under-population.
+                        (true, x) if x < 2 => false,
+                        // Rule 2: Any live cell with two or three live neighbors
+                        // lives on to the next generation.
+                        (true, 2) | (true, 3) => true,
+                        // Rule 3: Any live cell with more than three live
+                        // neighbors dies, as if by overpopulation.
+                        (true, x) if x > 3 => false,
+                        // Rule 4: Any dead cell with exactly three live neighbors
+                        // becomes a live cell, as if by reproduction.
+                        (false, 3) => true,
+                        // All other cells remain in the same state.
+                        (otherwise, _) => otherwise,
+                    };
+
+                    if cell != new_value {
+                        if new_value {
+                            new_lives.push(idx as u32)
+                        } else {
+                            new_deads.push(idx as u32)
+                        }
+                    }
+
+                    next.set(idx, new_value);
                 }
             }
         };
 
         // let _timer = Timer::new("free old cells");
         self.cells = next;
+        self.new_lives = new_lives;
+        self.new_deads = new_deads;
     }
 
     pub fn toggle_cell(&mut self, row: u32, col: u32) {

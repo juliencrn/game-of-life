@@ -8,7 +8,7 @@ import Fps from "./fps";
 let ctrlPressed = false
 let shiftPressed = false
 
-const gameOfLife = new GameOfLife(48, 48)
+const gameOfLife = new GameOfLife(64, 64)
 const ctx = elements.canvas.getContext('2d');
 const drawer = new Drawer(
     ctx,
@@ -20,17 +20,24 @@ const drawer = new Drawer(
 elements.canvas.height = (CELL_SIZE + 1) * gameOfLife.height + 1;
 elements.canvas.width = (CELL_SIZE + 1) * gameOfLife.width + 1;
 
-function redraw() {
+function redraw(lazy = false) {
     drawer.drawGrid();
-    drawer.drawCells(gameOfLife.getCells());
+    if (lazy) {
+        const { lives, deads } = gameOfLife.getUpdatedCells();
+        drawer.drawCellsOptimized(lives, deads)
+    } else {
+        drawer.drawCells(gameOfLife.getCells());
+    }
 }
 
 const timer = new Fps()
 
 const ticker = new Ticker(() => {
+    // for (let i = 0; i < 10; i++) {
     timer.render();
     gameOfLife.tick();
-    redraw()
+    redraw(true)
+    // }
 })
 
 const play = () => {

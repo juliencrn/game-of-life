@@ -36,10 +36,67 @@ export default class Drawer {
         return row * this.width + col;
     }
 
+    getPosition(idx) {
+        const row = Math.floor(idx / this.width);
+        const col = idx % this.width
+        return [row, col]
+    }
+
+    drawCellsOptimized(liveIds, deadIds) {
+        this.ctx.beginPath();
+
+        this.ctx.fillStyle = ALIVE_COLOR
+        for (const idx of liveIds) {
+            const [row, col] = this.getPosition(idx);
+            this.ctx.fillRect(
+                col * (CELL_SIZE + 1) + 1,
+                row * (CELL_SIZE + 1) + 1,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+        }
+
+        this.ctx.fillStyle = DEAD_COLOR
+        for (const idx of deadIds) {
+            const [row, col] = this.getPosition(idx);
+            this.ctx.fillRect(
+                col * (CELL_SIZE + 1) + 1,
+                row * (CELL_SIZE + 1) + 1,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+        }
+
+        // for (let row = 0; row < this.height; row++) {
+        //     for (let col = 0; col < this.width; col++) {
+        //         const idx = this.getIndex(row, col);
+
+        //         if (liveIds.includes(idx)) {
+        //             this.ctx.fillStyle = ALIVE_COLOR
+        //             this.ctx.fillRect(
+        //                 col * (CELL_SIZE + 1) + 1,
+        //                 row * (CELL_SIZE + 1) + 1,
+        //                 CELL_SIZE,
+        //                 CELL_SIZE
+        //             );
+        //         } else if (deadIds.includes(idx)) {
+        //             this.ctx.fillStyle = DEAD_COLOR
+        //             this.ctx.fillRect(
+        //                 col * (CELL_SIZE + 1) + 1,
+        //                 row * (CELL_SIZE + 1) + 1,
+        //                 CELL_SIZE,
+        //                 CELL_SIZE
+        //             );
+        //         }
+        //     }
+        // }
+
+        this.ctx.stroke();
+    }
+
     drawCells(cellsAsUint8Array) {
         this.ctx.beginPath();
 
-        let count = 0;
 
         for (let row = 0; row < this.height; row++) {
             for (let col = 0; col < this.width; col++) {
@@ -49,7 +106,6 @@ export default class Drawer {
                     ? ALIVE_COLOR
                     : DEAD_COLOR;
 
-                count++;
 
                 this.ctx.fillRect(
                     col * (CELL_SIZE + 1) + 1,
@@ -59,8 +115,6 @@ export default class Drawer {
                 );
             }
         }
-
-        console.log(`draw ${count} cells / ${this.height * this.width}`);
 
         this.ctx.stroke();
     }
