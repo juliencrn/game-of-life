@@ -4,14 +4,10 @@
 
   <strong>A game-of-life implementation with Rust and WebAssembly.
 
-  <!-- <p>
-    <a href="https://travis-ci.org/rustwasm/wasm-pack-template"><img src="https://img.shields.io/travis/rustwasm/wasm-pack-template.svg?style=flat-square" alt="Build Status" /></a>
-  </p> -->
-
   <h3>
     <a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html">Tutorial</a>
     <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
+    <a href="https://game-of-life.juliencaron.com/">Preview</a>
   </h3>
 
   <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
@@ -39,7 +35,7 @@ The initial pattern constitutes the seed of the system. The first generation is 
 wasm-pack build
 
 # Test
-wasm-pack test --firefox --headless 
+wasm-pack test --firefox --headless
 
 # Start the website
 cd www
