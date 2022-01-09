@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/rustwasm/create-wasm-app#readme",
   "dependencies": {
-    "game-of-life-juliencrn": "file:../pkg"
+    "game-of-life": "file:../pkg"
   },
   "devDependencies": {
     "hello-wasm-pack": "^0.1.0",

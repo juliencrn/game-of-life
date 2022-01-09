@@ -1,5 +1,5 @@
 [package]
-name = "game-of-life-juliencrn"
+name = "game-of-life"
 description = "Game of life implementation, compiled to wasm"
 repository = "https://github.com/juliencrn/game-of-life"
 license = "MIT"
