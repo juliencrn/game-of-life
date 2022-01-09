@@ -1,5 +1,5 @@
-import { memory } from "game-of-life/game_of_life_bg";
-import { Universe } from "game-of-life";
+import { memory } from "game-of-life-juliencrn/game_of_life_juliencrn_bg";
+import { Universe } from "game-of-life-juliencrn";
 
 class GameOfLife {
     constructor(width, height) {
