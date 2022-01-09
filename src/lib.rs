@@ -1,3 +1,4 @@
+#![no_std]
 // mod utils;
 
 extern crate js_sys;
@@ -27,11 +28,11 @@ mod utils;
 //     }
 // }
 
-// // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// // allocator.
-// #[cfg(feature = "wee_alloc")]
-// #[global_allocator]
-// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
+// allocator.
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 // #[wasm_bindgen]
 // extern "C" {
@@ -50,8 +51,6 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: FixedBitSet,
-    new_lives: Vec<u32>,
-    new_deads: Vec<u32>,
 }
 
 /// Methods not exposed to JavaScript.
@@ -98,7 +97,7 @@ impl Universe {
     }
 
     pub fn create_cells(size: usize) -> FixedBitSet {
-        FixedBitSet::with_capacity(size)
+        FixedBitSet::with_capacity(size * 3)
     }
 
     /// Get the dead and alive values of the entire universe.
@@ -115,12 +114,13 @@ impl Universe {
         }
     }
 
-    pub fn get_glider_pattern() -> Vec<(i32, i32)> {
-        vec![(-1, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
+    pub fn get_glider_pattern<'a>() -> &'a [(i32, i32)] {
+        &[(-1, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
     }
 
-    pub fn get_pulsar_pattern() -> Vec<(i32, i32)> {
-        let shape_1 = vec![
+    pub fn get_pulsar_pattern<'a>() -> &'a [(i32, i32)] {
+        &[
+            // Shape 1
             (-6, -4),
             (-6, -3),
             (-6, -2),
@@ -133,8 +133,7 @@ impl Universe {
             (-1, -4),
             (-1, -3),
             (-1, -2),
-        ];
-        let shape_2 = vec![
+            // Shape 3
             (-6, 2),
             (-6, 3),
             (-6, 4),
@@ -147,8 +146,7 @@ impl Universe {
             (-1, 2),
             (-1, 3),
             (-1, 4),
-        ];
-        let shape_3 = vec![
+            // Shape 3
             (1, -4),
             (1, -3),
             (1, -2),
@@ -161,8 +159,7 @@ impl Universe {
             (6, -4),
             (6, -3),
             (6, -2),
-        ];
-        let shape_4 = vec![
+            // shape 4
             (1, 2),
             (1, 3),
             (1, 4),
@@ -175,15 +172,7 @@ impl Universe {
             (6, 2),
             (6, 3),
             (6, 4),
-        ];
-        let mut cells_to_draw: Vec<(i32, i32)> = vec![];
-
-        cells_to_draw.extend(shape_1);
-        cells_to_draw.extend(shape_2);
-        cells_to_draw.extend(shape_3);
-        cells_to_draw.extend(shape_4);
-
-        cells_to_draw
+        ]
     }
 }
 
@@ -196,14 +185,11 @@ impl Universe {
         let width = 64;
         let height = 64;
         let size = (width * height) as usize;
-        let cells = Universe::create_cells(size);
 
         Universe {
             width,
             height,
-            cells,
-            new_lives: vec![],
-            new_deads: vec![],
+            cells: Universe::create_cells(size),
         }
     }
 
@@ -241,39 +227,12 @@ impl Universe {
         self.cells.as_slice().as_ptr()
     }
 
-    // pub fn deads(&self) -> Box<[u32]> {
-    //     self.new_deads.clone().into_boxed_slice()
-    // }
-
-    // pub fn lives(&self) -> Box<[u32]> {
-    //     self.new_lives.clone().into_boxed_slice()
-    // }
-
-    pub fn lives_ptr(&self) -> *const u32 {
-        self.new_lives.as_ptr()
-    }
-
-    pub fn lives_count(&self) -> usize {
-        self.new_lives.len()
-    }
-
-    pub fn deads_ptr(&self) -> *const u32 {
-        self.new_deads.as_ptr()
-    }
-
-    pub fn deads_count(&self) -> usize {
-        self.new_deads.len()
-    }
-
     pub fn tick(&mut self) {
-        // let _timer = Timer::new("Universe::tick");
+        // let _timer = Timer::new("\nUniverse::tick");
         let mut next = {
             // let _timer = Timer::new("Alloc next cells");
             self.cells.clone()
         };
-
-        let mut new_lives = vec![];
-        let mut new_deads = vec![];
 
         {
             // let _timer = Timer::new("new generation");
@@ -300,12 +259,9 @@ impl Universe {
                         (otherwise, _) => otherwise,
                     };
 
-                    if cell != new_value {
-                        if new_value {
-                            new_lives.push(idx as u32)
-                        } else {
-                            new_deads.push(idx as u32)
-                        }
+                    // Skip update if value is the same
+                    if cell == new_value {
+                        continue;
                     }
 
                     next.set(idx, new_value);
@@ -315,8 +271,6 @@ impl Universe {
 
         // let _timer = Timer::new("free old cells");
         self.cells = next;
-        self.new_lives = new_lives;
-        self.new_deads = new_deads;
     }
 
     pub fn toggle_cell(&mut self, row: u32, col: u32) {
@@ -333,7 +287,7 @@ impl Universe {
         self.cells = next;
     }
 
-    fn draw_pattern(&mut self, row: u32, col: u32, pattern: Vec<(i32, i32)>) {
+    fn draw_pattern(&mut self, row: u32, col: u32, pattern: &[(i32, i32)]) {
         let mut next = self.cells.clone();
 
         for (r_row, r_col) in pattern {

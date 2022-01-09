@@ -5,6 +5,7 @@ export default class Drawer {
         this.ctx = ctx
         this.width = width
         this.height = height
+        this.grid = []
     }
 
     drawGrid() {
@@ -36,83 +37,25 @@ export default class Drawer {
         return row * this.width + col;
     }
 
-    getPosition(idx) {
-        const row = Math.floor(idx / this.width);
-        const col = idx % this.width
-        return [row, col]
-    }
-
-    drawCellsOptimized(liveIds, deadIds) {
-        this.ctx.beginPath();
-
-        this.ctx.fillStyle = ALIVE_COLOR
-        for (const idx of liveIds) {
-            const [row, col] = this.getPosition(idx);
-            this.ctx.fillRect(
-                col * (CELL_SIZE + 1) + 1,
-                row * (CELL_SIZE + 1) + 1,
-                CELL_SIZE,
-                CELL_SIZE
-            );
-        }
-
-        this.ctx.fillStyle = DEAD_COLOR
-        for (const idx of deadIds) {
-            const [row, col] = this.getPosition(idx);
-            this.ctx.fillRect(
-                col * (CELL_SIZE + 1) + 1,
-                row * (CELL_SIZE + 1) + 1,
-                CELL_SIZE,
-                CELL_SIZE
-            );
-        }
-
-        // for (let row = 0; row < this.height; row++) {
-        //     for (let col = 0; col < this.width; col++) {
-        //         const idx = this.getIndex(row, col);
-
-        //         if (liveIds.includes(idx)) {
-        //             this.ctx.fillStyle = ALIVE_COLOR
-        //             this.ctx.fillRect(
-        //                 col * (CELL_SIZE + 1) + 1,
-        //                 row * (CELL_SIZE + 1) + 1,
-        //                 CELL_SIZE,
-        //                 CELL_SIZE
-        //             );
-        //         } else if (deadIds.includes(idx)) {
-        //             this.ctx.fillStyle = DEAD_COLOR
-        //             this.ctx.fillRect(
-        //                 col * (CELL_SIZE + 1) + 1,
-        //                 row * (CELL_SIZE + 1) + 1,
-        //                 CELL_SIZE,
-        //                 CELL_SIZE
-        //             );
-        //         }
-        //     }
-        // }
-
-        this.ctx.stroke();
-    }
-
     drawCells(cellsAsUint8Array) {
         this.ctx.beginPath();
-
 
         for (let row = 0; row < this.height; row++) {
             for (let col = 0; col < this.width; col++) {
                 const idx = this.getIndex(row, col);
+                const newVal = this.bitIsSet(idx, cellsAsUint8Array)
 
-                this.ctx.fillStyle = this.bitIsSet(idx, cellsAsUint8Array)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
+                if (this.grid[idx] !== newVal) {
+                    this.ctx.fillStyle = newVal ? ALIVE_COLOR : DEAD_COLOR;
+                    this.ctx.fillRect(
+                        col * (CELL_SIZE + 1) + 1,
+                        row * (CELL_SIZE + 1) + 1,
+                        CELL_SIZE,
+                        CELL_SIZE
+                    );
+                }
 
-
-                this.ctx.fillRect(
-                    col * (CELL_SIZE + 1) + 1,
-                    row * (CELL_SIZE + 1) + 1,
-                    CELL_SIZE,
-                    CELL_SIZE
-                );
+                this.grid[idx] = newVal
             }
         }
 

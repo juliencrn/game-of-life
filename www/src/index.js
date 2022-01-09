@@ -8,7 +8,7 @@ import Fps from "./fps";
 let ctrlPressed = false
 let shiftPressed = false
 
-const gameOfLife = new GameOfLife(64, 64)
+const gameOfLife = new GameOfLife(100, 100)
 const ctx = elements.canvas.getContext('2d');
 const drawer = new Drawer(
     ctx,
@@ -20,14 +20,9 @@ const drawer = new Drawer(
 elements.canvas.height = (CELL_SIZE + 1) * gameOfLife.height + 1;
 elements.canvas.width = (CELL_SIZE + 1) * gameOfLife.width + 1;
 
-function redraw(lazy = false) {
+function redraw() {
     drawer.drawGrid();
-    if (lazy) {
-        const { lives, deads } = gameOfLife.getUpdatedCells();
-        drawer.drawCellsOptimized(lives, deads)
-    } else {
-        drawer.drawCells(gameOfLife.getCells());
-    }
+    drawer.drawCells(gameOfLife.getCells());
 }
 
 const timer = new Fps()
@@ -36,7 +31,7 @@ const ticker = new Ticker(() => {
     // for (let i = 0; i < 10; i++) {
     timer.render();
     gameOfLife.tick();
-    redraw(true)
+    redraw()
     // }
 })
 
@@ -95,13 +90,16 @@ elements.canvas.addEventListener("click", event => {
     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), gameOfLife.width - 1);
 
     // Catch Ctrl+click, Ctrl+Shift+click
-    const execute = ctrlPressed
-        ? shiftPressed
-            ? gameOfLife.drawPulsar(row, col)
-            : gameOfLife.drawGlider(row, col)
-        : gameOfLife.toggleCell(row, col);
+    if (ctrlPressed) {
+        if (shiftPressed) {
+            gameOfLife.drawPulsar(row, col)
+        } else {
+            gameOfLife.drawGlider(row, col)
+        }
+    } else {
+        gameOfLife.toggleCell(row, col);
+    }
 
-    execute()
     redraw()
 })
 
